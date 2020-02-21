@@ -1,0 +1,141 @@
+<?php
+
+$done=0;
+if(isset($_POST['btn'])){
+	//print_r($_POST);
+	$url="https://www.google.com/recaptcha/api/siteverify";
+	$data=[
+	   'secret' => "6LeOts0UAAAAAGDBY5vimzEgfCArxcMkhqYOOxhm",
+	   'response' => $_POST['token'],
+	   'remoteip' => $_SERVER['REMOTE_ADDR']
+		
+		];
+    $options = array(
+	'http' => array(
+	   'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+	   'method' => 'POST',
+	   'content' => http_build_query($data)
+	)
+	);
+	
+	$context = stream_context_create($options);
+	$response= file_get_contents($url,false,$context);
+	$res= json_decode($response,true);
+	if(($res['success']==true)&&($done==0)){
+		//echo "Great Job";
+		include "Nextads.php";
+		
+	}
+	
+	else{
+		echo "bal Korcho";
+	}
+	//print_r($res);
+}
+
+
+include "config.php";
+//include"database.php";
+$d=date("Y_m_d");
+$sqlForDate="CREATE TABLE IF NOT EXISTS $d (
+D Date ,
+username VARCHAR(80),
+ads INT(9) NOT NULL DEFAULT 0,
+ PRIMARY KEY(username)
+
+);";
+$c=0;
+$resultForDate=$con->query($sqlForDate);
+$sqlForUserInsert="INSERT IGNORE INTO $d SET username='$u';";
+$resultForUserInsert=$con->query($sqlForUserInsert);
+if($resultForUserInsert){
+//echo "insertion True";	
+}
+$sqlForCount="SELECT * FROM $d WHERE username='$u'";
+$resultForCount=$con->query($sqlForCount);
+if($resultForCount){
+while($roo=mysqli_fetch_assoc($resultForCount)){
+	$c=$roo['ads'];
+	
+}
+//echo "  true7";
+}
+if($c<20){
+$u=$_SESSION['username'];
+//$d=date("Y/m/d");
+$c=$c+1;
+$sql="UPDATE $d SET ads='$c' WHERE username='$u'";
+$result=$con->query($sql);
+if ($result){
+	
+	//echo "Watched";
+}
+else{
+	echo "Error Occuredddddddddddddd".$con->error;
+}
+
+echo "\nYou Have Watched :".$c."  "."Ads Left For Today :"; echo 20-$c;
+
+}
+else{
+	//echo "You Have Already Watched all the ads";
+	include "AdDone.php";
+	$done=1;
+}
+?>
+
+<br>
+<form method="POST">
+<input type="hidden" name="token"  id="token"/>
+<input type="submit" name="btn"  id="ok" value="Okk"/>
+</form>
+
+<!----Ad Slot-1 !--->
+<div class="container" >
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-1
+
+</div>
+<!----Ad Slot-2 !--->
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-2
+
+</div>
+<!----Ad Slot-3 !--->
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-3
+
+</div>
+<!----Ad Slot-4 !--->
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-4
+
+</div>
+<!----Ad Slot-5 !--->
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-5
+
+</div>
+<!----Ad Slot-6 !--->
+<div class="row" style='background-image:url("bg.jpg");background-size: auto;'>
+Ad Slot-6
+
+</div>
+
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js?render=6LeOts0UAAAAAMi0mu1hGnuVd0VjjKWqWjv4wCvE"></script>
+<script>
+grecaptcha.ready(function() {
+    grecaptcha.execute('6LeOts0UAAAAAMi0mu1hGnuVd0VjjKWqWjv4wCvE', {action: 'homepage'}).then(function(token) {
+       console.log(token);
+	   document.getElementById("token").value= token;
+    });
+});
+</script>
+
+
+site: 6LeOts0UAAAAAMi0mu1hGnuVd0VjjKWqWjv4wCvE;
+secret: 6LeOts0UAAAAAGDBY5vimzEgfCArxcMkhqYOOxhm ;
+
+
